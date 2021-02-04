@@ -1,70 +1,246 @@
-# Getting Started with Create React App
+## useState
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+```jsx
+import React, { useState } from 'react';
 
-## Available Scripts
+function Example() {
+  // 声明一个叫 "count" 的 state 变量
+  const [count, setCount] = useState(0);
 
-In the project directory, you can run:
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+```
 
-### `npm start`
+## useEffect
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```jsx
+import React, { useState, useEffect } from 'react';
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+function Example() {
+  const [count, setCount] = useState(0);
 
-### `npm test`
+  
+  useEffect(() => {
+    document.title = `You clicked ${count} times`;
+  });
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+```
 
-### `npm run build`
+- useEffect如果第二个参数不写，相当于class中的componentDidMounted和componentDidUpdate
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+  ```jsx
+    useEffect(() => {
+      document.title = `You clicked ${count} times`;
+    });
+  ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- 返回一个函数，相当于componentWillUnMounted
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+  ```jsx
+    useEffect(() => {
+      console.log(count)
+      return ()=>{
+        console.log('离开')
+      }
+    })
+  ```
 
-### `npm run eject`
+- 第二个参数表示要根据哪些状态的改变而去重新渲染，如果为空数组，则无论什么状态改变都不会调用effect
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+  ```jsx
+    useEffect(() => {
+      console.log(count)
+      return ()=>{
+        console.log('离开')
+      }
+    }，[])
+  ```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- 数组中有哪些值，就会随着这些状态的改变而重新执行副作用
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+  ```jsx
+    useEffect(() => {
+      console.log(count)
+      return ()=>{
+        console.log('离开')
+      }
+    },[count])//只有count变化了才会调用effect中的函数
+  ```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+  
 
-## Learn More
+## useContext
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```jsx
+import React ,{useState,createContext,useContext} from 'react'
+const CountContext = createContext({})//1
+function Counter() {
+  let {count} = useContext(CountContext)//3
+  return <h2>{count}</h2>
+}
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+function Context() {
+  const [count,setCount] = useState(0)
+  return(
+    <div>
+      <h1>{count}</h1>
+      <button onClick={()=>{setCount(count+1)}}>点击	</button>
+      <CountContext.Provider value={count}>//2如果初始值为对象，这里要写成对象的形式
+        <Counter/>
+      </CountContext.Provider>
+    </div>
+  )
+}
+export  default Context
+```
 
-### Code Splitting
+- 父组件创建context
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- 在父组件中包裹子组件
 
-### Analyzing the Bundle Size
+  ```jsx
+        <CountContext.Provider value={count}>
+          <Counter/>
+        </CountContext.Provider>
+  ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- 子组件中使用useContext获取父组件中传递的数据
 
-### Making a Progressive Web App
+## memo
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## useMemo
 
-### Advanced Configuration
+## useCallback
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+https://blog.csdn.net/fedlover/article/details/103347989?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control
 
-### Deployment
+记忆函数
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## useReducer
 
-### `npm run build` fails to minify
+和useContxt结合可以实现redux的效果，但是不建议使用，使用useDispatch和useSlelector来使用redux
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## useRef
+
+- 相当于class中的createRef()
+
+```jsx
+import React ,{useRef}from 'react'
+function Ref() {
+  const textRef= useRef(null)
+
+  return(
+    <div>
+      <input type="text" ref={textRef}/>
+      <button onClick={()=>{
+        console.log(textRef.current.value)}}>点击</button>
+    </div>
+  )
+}
+export default Ref
+```
+
+
+
+## useDispatch
+
+- 用于结合redux使用
+
+- 首先创建redux的store，action，reducer。并在外层容器包裹provider传递store
+
+- 在需要使用dispatch发布action时
+
+  ```jsx
+  import React from 'react'
+  import {useDispatch} from 'react-redux'
+  import {createChangeColorAction} from "./redux/action";
+  function ChangeColor() {
+    const dispatch = useDispatch()
+    return (
+      <div>
+        <button onClick={()=>{dispatch(createChangeColorAction('red'))}}>红色</button>
+        <button onClick={()=>{dispatch(createChangeColorAction('blue'))}}>蓝色</button>
+      </div>
+    )
+  }
+  
+  export default ChangeColor
+  ```
+
+  
+
+## useSelector
+
+- 需要使用store中的state时
+
+  ```jsx
+  import React, {createContext} from 'react'
+  import {useSelector} from "react-redux";
+  
+  export const ColorContext = createContext({})
+  export const Color = (props) => {
+    const color = useSelector(state=>state.color)
+    return (
+      <ColorContext.Provider value={{color}}>
+        {props.children}
+      </ColorContext.Provider>
+    )
+  }
+  ```
+
+## 自定义hooks
+
+- 动态获取浏览器窗口大小的hooks
+
+```jsx
+import React,{useState,useEffect,useCallback} from 'react'
+
+
+function useWinSize() {
+  const [width,setWidth] = useState(document.body.clientWidth)
+  const [height,setHeight] = useState(document.body.clientWidth)
+
+  const reSize=useCallback(()=> {
+    setWidth(document.body.clientWidth)
+    setHeight(document.body.clientHeight)
+  },[])
+
+  useEffect(()=>{
+    window.addEventListener('resize',reSize)
+    return ()=>{
+      window.removeEventListener('resize',reSize)
+    }
+  },[])
+
+  return ({width,height})
+}
+
+export default function UseWinSize() {
+  const {width,height} = useWinSize()
+  return(
+    <div>
+      <h1>{width}</h1>
+      <h1>{height}</h1>
+    </div>
+
+  )
+}
+
+```
+
